@@ -1,6 +1,6 @@
 {
   "name": "taco-bell",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Taco bell reactive js framework with a single model source of truth. Simple as rice and beans.",
   "main": "index.js",
   "scripts": {
