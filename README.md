@@ -1,5 +1,5 @@
 # taco-bell
-a small client side mv* framework
+Taco bell reactive js framework with a single model source of truth. Simple as rice and beans.
 
 ### building
 _Prerequisite:_ npm/node
