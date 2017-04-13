@@ -8,8 +8,8 @@ _Prerequisite:_ npm/node
 * `tsc` to build
 
 ## Examples
-### [Tetris](https://www.npmjs.com/package/taco-bell-todo-mvc)
-[Preview](https://bglowney.github.io/todo.html)
-
-### [Todo mvc](https://www.npmjs.com/package/taco-bell-tetris)
+### [Tetris](https://www.npmjs.com/package/taco-bell-tetris)
 [Preview](https://bglowney.github.io/tetris.html)
+
+### [Todo mvc](https://www.npmjs.com/package/taco-bell-todo-mvc)
+[Preview](https://bglowney.github.io/todo.html)
