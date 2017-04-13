@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bglow/todo-mvc.git"
+    "url": "git+https://github.com/bglowney/taco-bell.git"
   },
   "author": "bglowney",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bglow/taco-bell/issues"
+    "url": "https://github.com/bglowney/taco-bell/issues"
   },
-  "homepage": "https://github.com/bglow/taco-bell#readme"
+  "homepage": "https://github.com/bglowney/taco-bell#readme"
 }
