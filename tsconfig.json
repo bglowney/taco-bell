@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "sourceMap": false,
+    "target": "es6"
+  },
+  "include":[
+    "index.ts",
+    "typings/*.d.ts",
+    "src/*"
+  ],
+  "exclude": [
+    "src/AnimatableCanvas.ts",
+    "src/Intersectable.ts"
+  ]
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# remove all built js files
+# fails silently
+
+rm index.js > /dev/null 2>&1
+rm ./src/*.js > /dev/null 2>&1
+rm ./todo-mvc/*.js > /dev/null 2>&1
+rm ./tetris/*.js > /dev/null 2>&1
