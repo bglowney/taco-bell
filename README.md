@@ -8,14 +8,8 @@ _Prerequisite:_ npm/node
 * `tsc` to build
 
 ## Examples
-[Todo-mvc](https://bglowney.github.io/todo.html)
+### [Todo mvc](https://www.npmjs.com/package/taco-bell-tetris)
+[Preview](https://bglowney.github.io/todo.html)
 
-__./todo-mvc/__: This example implements the requirements for _[todo-mvc](http://todomvc.com/)_
-* `./build` to build the web distribution
-* run `./serve` and then open your browser to localhost:8080
-
-[Tetris](https://bglowney.github.io/tetris.html)
-
-__./tetris/__: This example demonstrates use of taco-bell with svg elements
-* `./build` to build the web distribution
-* run `./serve` and then open your browser to localhost:8080
+### [Tetris](https://www.npmjs.com/package/taco-bell-todo-mvc)
+[Preview](https://bglowney.github.io/tetris.html)
