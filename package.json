@@ -11,9 +11,9 @@
     "url": "git+https://github.com/bglow/todo-mvc.git"
   },
   "author": "bglowney",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bglow/todo-mvc/issues"
+    "url": "https://github.com/bglow/taco-bell/issues"
   },
-  "homepage": "https://github.com/bglow/todo-mvc#readme"
+  "homepage": "https://github.com/bglow/taco-bell#readme"
 }
