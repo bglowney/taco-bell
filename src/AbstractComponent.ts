@@ -1,6 +1,7 @@
 import {HtmlTagName, HtmlAttributeName, EventName} from "./Html";
 import {Primitive} from "./Shared";
 import {ComponentEventHandler, ComponentProperty, Binding, TwoWayBinding} from "./Binding";
+import {AbstractElement} from "./AbstractElement";
 import {ModelElement} from "./ModelElement";
 
 export abstract class AbstractComponent {
@@ -9,9 +10,9 @@ export abstract class AbstractComponent {
 
     constructor(tagName?: HtmlTagName, parent?: Element, namespace?: string) {
         if (!namespace)
-            this.element = document.createElement(tagName || "div");
+            this.element = window.document.createElement(tagName || "div");
         else
-            this.element = document.createElementNS(namespace, tagName);
+            this.element = window.document.createElementNS(namespace, tagName);
         if (parent != undefined) {
             this.parent = parent;
             parent.appendChild(this.element);
@@ -55,8 +56,8 @@ export abstract class AbstractComponent {
 
         for (let cls of classes) {
             this.classes.add(cls);
-            if (cls instanceof ModelElement)
-                (cls as ModelElement<string>).registerCallback(this, this.withClass.bind(this));
+            if (cls instanceof AbstractElement)
+                (cls as AbstractElement<string>).registerCallback(this, this.withClass.bind(this));
             else if (cls instanceof Binding) {
                 let binding = cls as Binding<any,string>;
                 binding.model.registerCallback(this, this.updateClass.bind(this));
@@ -73,8 +74,8 @@ export abstract class AbstractComponent {
         for (let cp of this.classes.values()) {
             if (typeof cp == "string") {
                 classNames.push(cp as string);
-            } else if (cp instanceof ModelElement) {
-                classNames.push((cp as ModelElement<string>).get());
+            } else if (cp instanceof AbstractElement) {
+                classNames.push((cp as AbstractElement<string>).get());
             } else {// cp is Binding<any,string>
                 let binding = cp as Binding<any,string>;
                 classNames.push(binding.onupdate(binding.model.get()));
@@ -86,8 +87,8 @@ export abstract class AbstractComponent {
     removeClass(...classes: ComponentProperty<string>[]): this {
         if (this.classes) {
             for (let cls of classes) {
-                if (cls instanceof ModelElement) {
-                    (cls as ModelElement<string>).unregisterCallback(this, this.updateClass.bind(this));
+                if (cls instanceof AbstractElement) {
+                    (cls as AbstractElement<string>).unregisterCallback(this, this.updateClass.bind(this));
                 } else if (cls instanceof Binding) {
                     let binding = cls as Binding<any,string>;
                     binding.model.unregisterCallback(this, this.updateClass.bind(this));
@@ -102,8 +103,8 @@ export abstract class AbstractComponent {
 
     withText(text: ComponentProperty<Primitive>): this {
         this.text = text;
-        if (text instanceof ModelElement) {
-            (text as ModelElement<string>).registerCallback(this, this.updateText.bind(this));
+        if (text instanceof AbstractElement) {
+            (text as AbstractElement<string>).registerCallback(this, this.updateText.bind(this));
         } else if (this.text instanceof Binding) {
             let binding = text as Binding<any,string>;
             binding.model.registerCallback(this, this.updateText.bind(this));
@@ -116,8 +117,8 @@ export abstract class AbstractComponent {
             let text: string;
             if (typeof this.text == "string")
                 text = this.text as string;
-            else if (this.text instanceof ModelElement) {
-                text = (this.text as ModelElement<string>).get();
+            else if (this.text instanceof AbstractElement) {
+                text = (this.text as AbstractElement<string>).get();
             } else { // text is Binding<any,string>
                 let binding = (this.text as Binding<any,string>);
                 text = binding.onupdate(binding.model.get());
@@ -128,8 +129,8 @@ export abstract class AbstractComponent {
 
     removeText(): this {
         if (this.text != undefined) {
-            if (this.text instanceof ModelElement)
-                (this.text as ModelElement<string>).unregisterCallback(this, this.updateText.bind(this));
+            if (this.text instanceof AbstractElement)
+                (this.text as AbstractElement<string>).unregisterCallback(this, this.updateText.bind(this));
             else if (this.text instanceof Binding) {
                 let binding = this.text as Binding<any,string>;
                 binding.model.unregisterCallback(this, this.updateText.bind(this));
@@ -155,7 +156,7 @@ export abstract class AbstractComponent {
         }
 
         if (value instanceof ModelElement) {
-            (value as ModelElement<Primitive>).registerCallback(this, this.updateValue.bind(this));
+            (value as AbstractElement<Primitive>).registerCallback(this, this.updateValue.bind(this));
             (this.element as HTMLElement).onchange = function () {
                 setInputType.call(this);
                 (value as ModelElement<Primitive>).set((this.element as HTMLInputElement)[valueProp]);
@@ -174,8 +175,8 @@ export abstract class AbstractComponent {
 
     removeValue(): this {
         if (this.value != undefined) {
-            if (this.value instanceof ModelElement) {
-                (this.value as ModelElement<Primitive>).unregisterCallback(this, this.updateValue.bind(this));
+            if (this.value instanceof AbstractElement) {
+                (this.value as AbstractElement<Primitive>).unregisterCallback(this, this.updateValue.bind(this));
             } else if (this.value instanceof Binding) {
                 let binding = this.value as Binding<any,Primitive>;
                 binding.model.unregisterCallback(this, this.updateValue.bind(this));
@@ -193,8 +194,8 @@ export abstract class AbstractComponent {
             let valueProp: string = this.element.getAttribute("type") == "checkbox" || this.element.getAttribute("type") == "radio" ? "checked" : "value";
             if (!(typeof this.value == "object")) {
                 value = this.value as Primitive;
-            } else if (this.value instanceof ModelElement) {
-                value = (this.value as ModelElement<Primitive>).get();
+            } else if (this.value instanceof AbstractElement) {
+                value = (this.value as AbstractElement<Primitive>).get();
             } else {// value is Binding<any,Primitive>
                 let binding = (this.value as Binding<any,Primitive>);
                 value = binding.onupdate(binding.model.get());
@@ -211,8 +212,8 @@ export abstract class AbstractComponent {
 
         this.attrs[name] = value;
 
-        if (value instanceof ModelElement) {
-            (value as ModelElement<Primitive>).registerCallback(this, this.updateAttribute.bind(this,name));
+        if (value instanceof AbstractElement) {
+            (value as AbstractElement<Primitive>).registerCallback(this, this.updateAttribute.bind(this,name));
         } else if (value instanceof Binding) {
             let binding = value as Binding<any,Primitive>;
             binding.model.registerCallback(this, this.updateAttribute.bind(this,name));
@@ -225,8 +226,8 @@ export abstract class AbstractComponent {
         if (this.attrs != undefined) {
             if (this.attrs[name] != undefined) {
                 let value = this.attrs[name];
-                if (value instanceof ModelElement) {
-                    (value as ModelElement<Primitive>).unregisterCallback(this, this.updateAttribute.bind(this, name));
+                if (value instanceof AbstractElement) {
+                    (value as AbstractElement<Primitive>).unregisterCallback(this, this.updateAttribute.bind(this, name));
                 } else {
                     let binding = value as Binding<any,Primitive>;
                     binding.model.unregisterCallback(this, this.updateAttribute.bind(this, name));
@@ -242,8 +243,8 @@ export abstract class AbstractComponent {
         if (this.attrs) {
             if (this.attrs[name] != undefined) {
                 let value = this.attrs[name];
-                if (value instanceof ModelElement) {
-                    value = (value as ModelElement<Primitive>).get();
+                if (value instanceof AbstractElement) {
+                    value = (value as AbstractElement<Primitive>).get();
                 } else if (value instanceof Binding) {
                     let  binding = value as Binding<any,Primitive>;
                     value = binding.onupdate(binding.model.get());

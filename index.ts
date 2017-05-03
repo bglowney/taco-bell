@@ -18,6 +18,7 @@ export { FunctionalElement } from "./src/FunctionalComponent";
 export { HtmlAttributeName, EventName, HtmlTagName, TEXT_TYPE } from "./src/Html";
 //export { Intersectable } from "./src/Intersectable";
 export { ModelArray } from "./src/ModelArray";
+export { ModelObject } from "./src/ModelObject";
 export { ModelCollection } from "./src/ModelCollection";
 export { ModelElement } from "./src/ModelElement";
 export { Primitive } from "./src/Shared";

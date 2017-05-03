@@ -1,12 +1,13 @@
 "use strict";
 const Binding_1 = require("./Binding");
+const AbstractElement_1 = require("./AbstractElement");
 const ModelElement_1 = require("./ModelElement");
 class AbstractComponent {
     constructor(tagName, parent, namespace) {
         if (!namespace)
-            this.element = document.createElement(tagName || "div");
+            this.element = window.document.createElement(tagName || "div");
         else
-            this.element = document.createElementNS(namespace, tagName);
+            this.element = window.document.createElementNS(namespace, tagName);
         if (parent != undefined) {
             this.parent = parent;
             parent.appendChild(this.element);
@@ -40,7 +41,7 @@ class AbstractComponent {
             this.classes = new Set();
         for (let cls of classes) {
             this.classes.add(cls);
-            if (cls instanceof ModelElement_1.ModelElement)
+            if (cls instanceof AbstractElement_1.AbstractElement)
                 cls.registerCallback(this, this.withClass.bind(this));
             else if (cls instanceof Binding_1.Binding) {
                 let binding = cls;
@@ -57,7 +58,7 @@ class AbstractComponent {
             if (typeof cp == "string") {
                 classNames.push(cp);
             }
-            else if (cp instanceof ModelElement_1.ModelElement) {
+            else if (cp instanceof AbstractElement_1.AbstractElement) {
                 classNames.push(cp.get());
             }
             else {
@@ -70,7 +71,7 @@ class AbstractComponent {
     removeClass(...classes) {
         if (this.classes) {
             for (let cls of classes) {
-                if (cls instanceof ModelElement_1.ModelElement) {
+                if (cls instanceof AbstractElement_1.AbstractElement) {
                     cls.unregisterCallback(this, this.updateClass.bind(this));
                 }
                 else if (cls instanceof Binding_1.Binding) {
@@ -84,7 +85,7 @@ class AbstractComponent {
     }
     withText(text) {
         this.text = text;
-        if (text instanceof ModelElement_1.ModelElement) {
+        if (text instanceof AbstractElement_1.AbstractElement) {
             text.registerCallback(this, this.updateText.bind(this));
         }
         else if (this.text instanceof Binding_1.Binding) {
@@ -98,7 +99,7 @@ class AbstractComponent {
             let text;
             if (typeof this.text == "string")
                 text = this.text;
-            else if (this.text instanceof ModelElement_1.ModelElement) {
+            else if (this.text instanceof AbstractElement_1.AbstractElement) {
                 text = this.text.get();
             }
             else {
@@ -110,7 +111,7 @@ class AbstractComponent {
     }
     removeText() {
         if (this.text != undefined) {
-            if (this.text instanceof ModelElement_1.ModelElement)
+            if (this.text instanceof AbstractElement_1.AbstractElement)
                 this.text.unregisterCallback(this, this.updateText.bind(this));
             else if (this.text instanceof Binding_1.Binding) {
                 let binding = this.text;
@@ -147,7 +148,7 @@ class AbstractComponent {
     }
     removeValue() {
         if (this.value != undefined) {
-            if (this.value instanceof ModelElement_1.ModelElement) {
+            if (this.value instanceof AbstractElement_1.AbstractElement) {
                 this.value.unregisterCallback(this, this.updateValue.bind(this));
             }
             else if (this.value instanceof Binding_1.Binding) {
@@ -167,7 +168,7 @@ class AbstractComponent {
             if (!(typeof this.value == "object")) {
                 value = this.value;
             }
-            else if (this.value instanceof ModelElement_1.ModelElement) {
+            else if (this.value instanceof AbstractElement_1.AbstractElement) {
                 value = this.value.get();
             }
             else {
@@ -181,7 +182,7 @@ class AbstractComponent {
         if (!this.attrs)
             this.attrs = {};
         this.attrs[name] = value;
-        if (value instanceof ModelElement_1.ModelElement) {
+        if (value instanceof AbstractElement_1.AbstractElement) {
             value.registerCallback(this, this.updateAttribute.bind(this, name));
         }
         else if (value instanceof Binding_1.Binding) {
@@ -194,7 +195,7 @@ class AbstractComponent {
         if (this.attrs != undefined) {
             if (this.attrs[name] != undefined) {
                 let value = this.attrs[name];
-                if (value instanceof ModelElement_1.ModelElement) {
+                if (value instanceof AbstractElement_1.AbstractElement) {
                     value.unregisterCallback(this, this.updateAttribute.bind(this, name));
                 }
                 else {
@@ -211,7 +212,7 @@ class AbstractComponent {
         if (this.attrs) {
             if (this.attrs[name] != undefined) {
                 let value = this.attrs[name];
-                if (value instanceof ModelElement_1.ModelElement) {
+                if (value instanceof AbstractElement_1.AbstractElement) {
                     value = value.get();
                 }
                 else if (value instanceof Binding_1.Binding) {
