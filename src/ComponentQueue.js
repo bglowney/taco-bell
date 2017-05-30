@@ -17,6 +17,7 @@ class _ComponentQueue {
     cycle() {
         const queueToExecute = this.queue;
         const cycleRootToExecute = this.cycleRoot;
+        this.cycleRoot = null;
         if (queueToExecute.size == 0)
             return;
         let rootParent = this.cycleRoot.getParent();

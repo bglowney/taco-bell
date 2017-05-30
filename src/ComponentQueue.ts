@@ -39,6 +39,7 @@ export class _ComponentQueue {
         // reset queue to absorb any changes in the meantime
         const queueToExecute = this.queue;
         const cycleRootToExecute = this.cycleRoot;
+        this.cycleRoot = null;
 
         if (queueToExecute.size == 0) return;
 
