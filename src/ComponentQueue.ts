@@ -38,12 +38,13 @@ export class _ComponentQueue {
     public cycle(): void {
         // reset queue to absorb any changes in the meantime
         const queueToExecute = this.queue;
+        this.queue = new Set();
         const cycleRootToExecute = this.cycleRoot;
         this.cycleRoot = null;
 
         if (queueToExecute.size == 0) return;
 
-        let rootParent = this.cycleRoot.getParent();
+        let rootParent = cycleRootToExecute.getParent();
         let rootParentElement: Element;
         if (rootParent instanceof Element)
             rootParentElement = rootParent as Element;
@@ -53,7 +54,10 @@ export class _ComponentQueue {
         var nextSibling = cycleRootToExecute.getElement().nextSibling;
         rootParentElement.removeChild(cycleRootToExecute.getElement());
 
-        this.queue = new Set();
+        // if the cycle root is destroyed, do not replace it
+        // and do not make updates to child nodes
+        if (cycleRootToExecute._isDestroyed()) return;
+
         for (let item of queueToExecute.values()) {
             if (_instanceofQueableComponent(item)) {
                 let component = item as _QueableComponent;

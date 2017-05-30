@@ -16,11 +16,12 @@ class _ComponentQueue {
     }
     cycle() {
         const queueToExecute = this.queue;
+        this.queue = new Set();
         const cycleRootToExecute = this.cycleRoot;
         this.cycleRoot = null;
         if (queueToExecute.size == 0)
             return;
-        let rootParent = this.cycleRoot.getParent();
+        let rootParent = cycleRootToExecute.getParent();
         let rootParentElement;
         if (rootParent instanceof Element)
             rootParentElement = rootParent;
@@ -28,7 +29,8 @@ class _ComponentQueue {
             rootParentElement = rootParent.getElement();
         var nextSibling = cycleRootToExecute.getElement().nextSibling;
         rootParentElement.removeChild(cycleRootToExecute.getElement());
-        this.queue = new Set();
+        if (cycleRootToExecute._isDestroyed())
+            return;
         for (let item of queueToExecute.values()) {
             if (_instanceofQueableComponent(item)) {
                 let component = item;

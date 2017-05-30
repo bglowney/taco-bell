@@ -47,7 +47,8 @@ class AbstractComponent {
         return this.destroyed;
     }
     _remove() {
-        this.element.parentElement.removeChild(this.element);
+        if (this.element.parentElement)
+            this.element.parentElement.removeChild(this.element);
     }
     destroy() {
         this.destroyed = true;

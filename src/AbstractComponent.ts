@@ -60,7 +60,8 @@ export abstract class AbstractComponent implements _QueableComponent{
     }
 
     _remove(): void{
-        this.element.parentElement.removeChild(this.element);
+        if (this.element.parentElement)
+            this.element.parentElement.removeChild(this.element);
     }
 
     destroy(): void {

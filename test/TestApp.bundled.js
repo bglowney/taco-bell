@@ -48,7 +48,8 @@ class AbstractComponent {
         return this.destroyed;
     }
     _remove() {
-        this.element.parentElement.removeChild(this.element);
+        if (this.element.parentElement)
+            this.element.parentElement.removeChild(this.element);
     }
     destroy() {
         this.destroyed = true;
@@ -243,8 +244,8 @@ class AbstractComponent {
         }
     }
     on(eventName, eventHandler) {
-        this.element.addEventListener(eventName, () => {
-            eventHandler.call(this);
+        this.element.addEventListener(eventName, (event) => {
+            eventHandler.call(this, event);
             ComponentQueue_1.ComponentQueue.cycle();
         });
         return this;
@@ -471,10 +472,12 @@ class _ComponentQueue {
     }
     cycle() {
         const queueToExecute = this.queue;
+        this.queue = new Set();
         const cycleRootToExecute = this.cycleRoot;
+        this.cycleRoot = null;
         if (queueToExecute.size == 0)
             return;
-        let rootParent = this.cycleRoot.getParent();
+        let rootParent = cycleRootToExecute.getParent();
         let rootParentElement;
         if (rootParent instanceof Element)
             rootParentElement = rootParent;
@@ -482,7 +485,8 @@ class _ComponentQueue {
             rootParentElement = rootParent.getElement();
         var nextSibling = cycleRootToExecute.getElement().nextSibling;
         rootParentElement.removeChild(cycleRootToExecute.getElement());
-        this.queue = new Set();
+        if (cycleRootToExecute._isDestroyed())
+            return;
         for (let item of queueToExecute.values()) {
             if (_instanceofQueableComponent(item)) {
                 let component = item;
