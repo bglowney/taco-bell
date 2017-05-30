@@ -1,6 +1,7 @@
 // This script is called by npm when this package is required
 export { AbstractComponent } from "./src/AbstractComponent";
 export { AbstractElement } from "./src/AbstractElement";
+export { ComponentQueue } from "./src/ComponentQueue";
 //export { AnimatableCanvas} from "./src/AnimatableCanvas";
 export { Binding,
          CollectionBinding,
