@@ -242,8 +242,8 @@ class AbstractComponent {
         }
     }
     on(eventName, eventHandler) {
-        this.element.addEventListener(eventName, () => {
-            eventHandler.call(this);
+        this.element.addEventListener(eventName, (event) => {
+            eventHandler.call(this, event);
             ComponentQueue_1.ComponentQueue.cycle();
         });
         return this;

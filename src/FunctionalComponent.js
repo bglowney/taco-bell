@@ -1,6 +1,6 @@
 "use strict";
-const AbstractComponent_1 = require("./AbstractComponent");
-class FunctionalElement extends AbstractComponent_1.AbstractElement {
+const AbstractElement_1 = require("./AbstractElement");
+class FunctionalElement extends AbstractElement_1.AbstractElement {
     constructor(handler, ...listenedTo) {
         super();
         this.handler = handler;

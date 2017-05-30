@@ -284,8 +284,8 @@ export abstract class AbstractComponent implements _QueableComponent{
 
     on(eventName: EventName, eventHandler: ComponentEventHandler<this>): this {
         // this.element.addEventListener(eventName, eventHandler.bind(this));
-        this.element.addEventListener(eventName, (): void => {
-            eventHandler.call(this);
+        this.element.addEventListener(eventName, (event: Event): void => {
+            eventHandler.call(this, event);
             ComponentQueue.cycle();
         });
         return this;
