@@ -1,8 +1,8 @@
 "use strict";
 var AbstractComponent_1 = require("./src/AbstractComponent");
 exports.AbstractComponent = AbstractComponent_1.AbstractComponent;
-var AbstractElement_1 = require("./src/AbstractElement");
-exports.AbstractElement = AbstractElement_1.AbstractElement;
+exports.AbstractElement = AbstractComponent_1.AbstractElement;
+exports.ComponentQueue = AbstractComponent_1.ComponentQueue;
 var Binding_1 = require("./src/Binding");
 exports.Binding = Binding_1.Binding;
 exports.persist = Binding_1.persist;

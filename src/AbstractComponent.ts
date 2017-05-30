@@ -3,8 +3,9 @@ import {Primitive} from "./Shared";
 import {ComponentEventHandler, ComponentProperty, Binding, TwoWayBinding} from "./Binding";
 import {AbstractElement} from "./AbstractElement";
 import {ModelElement} from "./ModelElement";
+import {ComponentQueue, _QueableComponent} from "./ComponentQueue";
 
-export abstract class AbstractComponent {
+export abstract class AbstractComponent implements _QueableComponent{
     protected parent: AbstractComponent | Element;
     protected element: Element;
 
@@ -17,6 +18,7 @@ export abstract class AbstractComponent {
             this.parent = parent;
             parent.appendChild(this.element);
         }
+        ComponentQueue.add(this);
     }
 
     getElement(): Element {
@@ -31,21 +33,39 @@ export abstract class AbstractComponent {
         this.parent = parent;
     }
 
-    reinit(): this {
-        this.updateClass();
-        this.updateText();
-        if (this.attrs) {
-            for (let name in this.attrs) {
-                this.updateAttribute(name as HtmlAttributeName);
+    getParent(): this | Element {
+        return this.parent as this | Element;
+    }
+
+    reinit(immediate = false): void {
+        if (immediate) {
+            this.updateClass();
+            this.updateText();
+            if (this.attrs) {
+                for (let name in this.attrs) {
+                    this.updateAttribute(name as HtmlAttributeName);
+                }
             }
+            // update value after attributes because input type may depend on an HtmlElement attribute
+            this.updateValue();
+        } else {
+            ComponentQueue.add(this);
         }
-        // update value after attributes becauase input type may depend on an HtmlElement attribute
-        this.updateValue();
-        return this;
+    }
+
+    private destroyed = false;
+
+    _isDestroyed(): boolean {
+        return this.destroyed;
+    }
+
+    _remove(): void{
+        this.element.parentElement.removeChild(this.element);
     }
 
     destroy(): void {
-        this.element.parentElement.removeChild(this.element);
+        this.destroyed = true;
+        ComponentQueue.add(this);
     }
 
     protected classes: Set<ComponentProperty<string>>;
@@ -56,11 +76,13 @@ export abstract class AbstractComponent {
 
         for (let cls of classes) {
             this.classes.add(cls);
-            if (cls instanceof AbstractElement)
-                (cls as AbstractElement<string>).registerCallback(this, this.withClass.bind(this));
-            else if (cls instanceof Binding) {
+            if (cls instanceof AbstractElement) {
+                // (cls as AbstractElement<string>).registerCallback(this, this.withClass.bind(this));
+                (cls as AbstractElement<string>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+            } else if (cls instanceof Binding) {
                 let binding = cls as Binding<any,string>;
-                binding.model.registerCallback(this, this.updateClass.bind(this));
+                // binding.model.registerCallback(this, this.updateClass.bind(this));
+                binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
             }
         }
         return this;
@@ -104,10 +126,12 @@ export abstract class AbstractComponent {
     withText(text: ComponentProperty<Primitive>): this {
         this.text = text;
         if (text instanceof AbstractElement) {
-            (text as AbstractElement<string>).registerCallback(this, this.updateText.bind(this));
+            // (text as AbstractElement<string>).registerCallback(this, this.updateText.bind(this));
+            (text as AbstractElement<string>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else if (this.text instanceof Binding) {
             let binding = text as Binding<any,string>;
-            binding.model.registerCallback(this, this.updateText.bind(this));
+            // binding.model.registerCallback(this, this.updateText.bind(this));
+            binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         }
         return this;
     }
@@ -156,18 +180,20 @@ export abstract class AbstractComponent {
         }
 
         if (value instanceof ModelElement) {
-            (value as AbstractElement<Primitive>).registerCallback(this, this.updateValue.bind(this));
-            (this.element as HTMLElement).onchange = function () {
+            // (value as AbstractElement<Primitive>).registerCallback(this, this.updateValue.bind(this));
+            (value as AbstractElement<Primitive>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+            this.on("change", function () {
                 setInputType.call(this);
                 (value as ModelElement<Primitive>).set((this.element as HTMLInputElement)[valueProp]);
-            }.bind(this)
+            }.bind(this));
         } else if (this.value instanceof TwoWayBinding) {
             let binding = value as TwoWayBinding<Primitive,any,any>;
-            binding.model.registerCallback(this, this.updateValue.bind(this));
-            (this.element as HTMLElement).onchange = function () {
+            // binding.model.registerCallback(this, this.updateValue.bind(this));
+            binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+            this.on("change", function () {
                 setInputType.call(this);
                 binding.model.set(binding.onUserUpdate((this.element as HTMLInputElement)[valueProp]));
-            }.bind(this);
+            }.bind(this));
         }
 
         return this;
@@ -213,10 +239,12 @@ export abstract class AbstractComponent {
         this.attrs[name] = value;
 
         if (value instanceof AbstractElement) {
-            (value as AbstractElement<Primitive>).registerCallback(this, this.updateAttribute.bind(this,name));
+            // (value as AbstractElement<Primitive>).registerCallback(this, this.updateAttribute.bind(this,name));
+            (value as AbstractElement<Primitive>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else if (value instanceof Binding) {
             let binding = value as Binding<any,Primitive>;
-            binding.model.registerCallback(this, this.updateAttribute.bind(this,name));
+            //binding.model.registerCallback(this, this.updateAttribute.bind(this,name));
+            binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         }
 
         return this;
@@ -255,7 +283,11 @@ export abstract class AbstractComponent {
     }
 
     on(eventName: EventName, eventHandler: ComponentEventHandler<this>): this {
-        this.element.addEventListener(eventName, eventHandler.bind(this));
+        // this.element.addEventListener(eventName, eventHandler.bind(this));
+        this.element.addEventListener(eventName, (): void => {
+            eventHandler.call(this);
+            ComponentQueue.cycle();
+        });
         return this;
     }
 

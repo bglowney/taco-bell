@@ -58,6 +58,7 @@ export type EventName =
     | "mouseup"
     | "focus"
     | "focusout"
+    | "change"
     ;
 
 export type TEXT_TYPE =

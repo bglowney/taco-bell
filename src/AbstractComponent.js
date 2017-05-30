@@ -2,8 +2,10 @@
 const Binding_1 = require("./Binding");
 const AbstractElement_1 = require("./AbstractElement");
 const ModelElement_1 = require("./ModelElement");
+const ComponentQueue_1 = require("./ComponentQueue");
 class AbstractComponent {
     constructor(tagName, parent, namespace) {
+        this.destroyed = false;
         if (!namespace)
             this.element = window.document.createElement(tagName || "div");
         else
@@ -12,6 +14,7 @@ class AbstractComponent {
             this.parent = parent;
             parent.appendChild(this.element);
         }
+        ComponentQueue_1.ComponentQueue.add(this);
     }
     getElement() {
         return this.element;
@@ -22,30 +25,45 @@ class AbstractComponent {
     setParent(parent) {
         this.parent = parent;
     }
-    reinit() {
-        this.updateClass();
-        this.updateText();
-        if (this.attrs) {
-            for (let name in this.attrs) {
-                this.updateAttribute(name);
+    getParent() {
+        return this.parent;
+    }
+    reinit(immediate = false) {
+        if (immediate) {
+            this.updateClass();
+            this.updateText();
+            if (this.attrs) {
+                for (let name in this.attrs) {
+                    this.updateAttribute(name);
+                }
             }
+            this.updateValue();
         }
-        this.updateValue();
-        return this;
+        else {
+            ComponentQueue_1.ComponentQueue.add(this);
+        }
+    }
+    _isDestroyed() {
+        return this.destroyed;
+    }
+    _remove() {
+        this.element.parentElement.removeChild(this.element);
     }
     destroy() {
-        this.element.parentElement.removeChild(this.element);
+        this.destroyed = true;
+        ComponentQueue_1.ComponentQueue.add(this);
     }
     withClass(...classes) {
         if (!this.classes)
             this.classes = new Set();
         for (let cls of classes) {
             this.classes.add(cls);
-            if (cls instanceof AbstractElement_1.AbstractElement)
-                cls.registerCallback(this, this.withClass.bind(this));
+            if (cls instanceof AbstractElement_1.AbstractElement) {
+                cls.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
+            }
             else if (cls instanceof Binding_1.Binding) {
                 let binding = cls;
-                binding.model.registerCallback(this, this.updateClass.bind(this));
+                binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
             }
         }
         return this;
@@ -86,11 +104,11 @@ class AbstractComponent {
     withText(text) {
         this.text = text;
         if (text instanceof AbstractElement_1.AbstractElement) {
-            text.registerCallback(this, this.updateText.bind(this));
+            text.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
         }
         else if (this.text instanceof Binding_1.Binding) {
             let binding = text;
-            binding.model.registerCallback(this, this.updateText.bind(this));
+            binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
         }
         return this;
     }
@@ -130,19 +148,19 @@ class AbstractComponent {
             valueProp = inputType == "checkbox" || inputType == "radio" ? "checked" : "value";
         }
         if (value instanceof ModelElement_1.ModelElement) {
-            value.registerCallback(this, this.updateValue.bind(this));
-            this.element.onchange = function () {
+            value.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
+            this.on("change", function () {
                 setInputType.call(this);
                 value.set(this.element[valueProp]);
-            }.bind(this);
+            }.bind(this));
         }
         else if (this.value instanceof Binding_1.TwoWayBinding) {
             let binding = value;
-            binding.model.registerCallback(this, this.updateValue.bind(this));
-            this.element.onchange = function () {
+            binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
+            this.on("change", function () {
                 setInputType.call(this);
                 binding.model.set(binding.onUserUpdate(this.element[valueProp]));
-            }.bind(this);
+            }.bind(this));
         }
         return this;
     }
@@ -183,11 +201,11 @@ class AbstractComponent {
             this.attrs = {};
         this.attrs[name] = value;
         if (value instanceof AbstractElement_1.AbstractElement) {
-            value.registerCallback(this, this.updateAttribute.bind(this, name));
+            value.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
         }
         else if (value instanceof Binding_1.Binding) {
             let binding = value;
-            binding.model.registerCallback(this, this.updateAttribute.bind(this, name));
+            binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
         }
         return this;
     }
@@ -224,7 +242,10 @@ class AbstractComponent {
         }
     }
     on(eventName, eventHandler) {
-        this.element.addEventListener(eventName, eventHandler.bind(this));
+        this.element.addEventListener(eventName, () => {
+            eventHandler.call(this);
+            ComponentQueue_1.ComponentQueue.cycle();
+        });
         return this;
     }
     off(eventName) {

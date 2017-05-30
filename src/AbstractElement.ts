@@ -1,9 +1,10 @@
 import {AbstractComponent} from "./AbstractComponent";
 import {UpdateCallback} from "./Binding";
 import {RemoteStream} from "./RemoteStream";
+import {_QueableElement, ComponentQueue, _instanceofQueableComponent, _QueableComponent} from "./ComponentQueue";
 
-export abstract class AbstractElement<V> {
-    protected updateCallbacks: Map<any, Set<UpdateCallback<V,any>>>;
+export abstract class AbstractElement<V> implements _QueableElement {
+    protected updateCallbacks: Map<AbstractComponent | AbstractElement<any>, Set<UpdateCallback<V,any>>>;
     protected boundComponents: Set<AbstractComponent>;
 
     abstract get(): V;
@@ -28,6 +29,7 @@ export abstract class AbstractElement<V> {
         if (!this.updateCallbacks)
             this.updateCallbacks = new Map();
 
+
         let callbackSet = this.updateCallbacks.get(component);
         if (callbackSet == undefined) {
             callbackSet = new Set<UpdateCallback<V,any>>();
@@ -49,12 +51,19 @@ export abstract class AbstractElement<V> {
         }
     }
 
-    protected doUpdate(): void {
+    doUpdate(): void {
         if (!this.updateCallbacks)
             return;
+
         for (let callbackSet of this.updateCallbacks.values()) {
             for (let callback of callbackSet.values())
                 callback(this.get());
         }
+
+        for (let key of this.updateCallbacks.keys()) {
+            if (_instanceofQueableComponent(key))
+                ComponentQueue.add(key as _QueableComponent);
+        }
     }
+
 }

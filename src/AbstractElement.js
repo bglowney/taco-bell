@@ -1,4 +1,5 @@
 "use strict";
+const ComponentQueue_1 = require("./ComponentQueue");
 class AbstractElement {
     destroy() {
         if (!this.boundComponents)
@@ -39,6 +40,10 @@ class AbstractElement {
         for (let callbackSet of this.updateCallbacks.values()) {
             for (let callback of callbackSet.values())
                 callback(this.get());
+        }
+        for (let key of this.updateCallbacks.keys()) {
+            if (ComponentQueue_1._instanceofQueableComponent(key))
+                ComponentQueue_1.ComponentQueue.add(key);
         }
     }
 }
