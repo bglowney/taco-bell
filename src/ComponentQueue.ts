@@ -32,10 +32,14 @@ export class _ComponentQueue {
 
     public add(component: _QueableComponent): void {
         this.queue.add(component);
-        this.resolveAncestor(component);
     }
 
     public cycle(): void {
+        for (let component of this.queue.values()) {
+            if (_instanceofQueableComponent(component))
+                this.resolveAncestor(component as _QueableComponent);
+        }
+
         // reset queue to absorb any changes in the meantime
         const queueToExecute = this.queue;
         this.queue = new Set();
@@ -90,7 +94,7 @@ export class _ComponentQueue {
         // otherwise make no change
         let ancestor: _QueableComponent | Element = other;
         while (ancestor && !(ancestor instanceof Element) &&
-            (ancestor = (ancestor as _QueableComponent).getParent())) {
+        (ancestor = (ancestor as _QueableComponent).getParent())) {
             if (ancestor === this.cycleRoot)
                 return;
         }

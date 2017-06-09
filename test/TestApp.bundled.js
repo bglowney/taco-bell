@@ -468,9 +468,12 @@ class _ComponentQueue {
     }
     add(component) {
         this.queue.add(component);
-        this.resolveAncestor(component);
     }
     cycle() {
+        for (let component of this.queue.values()) {
+            if (_instanceofQueableComponent(component))
+                this.resolveAncestor(component);
+        }
         const queueToExecute = this.queue;
         this.queue = new Set();
         const cycleRootToExecute = this.cycleRoot;
