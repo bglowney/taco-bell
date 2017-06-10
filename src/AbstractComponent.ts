@@ -84,6 +84,8 @@ export abstract class AbstractComponent implements _QueableComponent{
                 let binding = cls as Binding<any,string>;
                 // binding.model.registerCallback(this, this.updateClass.bind(this));
                 binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+            } else {
+                ComponentQueue.add(this);
             }
         }
         return this;
@@ -133,6 +135,8 @@ export abstract class AbstractComponent implements _QueableComponent{
             let binding = text as Binding<any,string>;
             // binding.model.registerCallback(this, this.updateText.bind(this));
             binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+        } else {
+            ComponentQueue.add(this);
         }
         return this;
     }
@@ -195,6 +199,8 @@ export abstract class AbstractComponent implements _QueableComponent{
                 setInputType.call(this);
                 binding.model.set(binding.onUserUpdate((this.element as HTMLInputElement)[valueProp]));
             }.bind(this));
+        } else {
+            ComponentQueue.add(this);
         }
 
         return this;
@@ -246,6 +252,8 @@ export abstract class AbstractComponent implements _QueableComponent{
             let binding = value as Binding<any,Primitive>;
             //binding.model.registerCallback(this, this.updateAttribute.bind(this,name));
             binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
+        } else {
+            ComponentQueue.add(this);
         }
 
         return this;

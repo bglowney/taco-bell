@@ -66,6 +66,9 @@ class AbstractComponent {
                 let binding = cls;
                 binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
             }
+            else {
+                ComponentQueue_1.ComponentQueue.add(this);
+            }
         }
         return this;
     }
@@ -110,6 +113,9 @@ class AbstractComponent {
         else if (this.text instanceof Binding_1.Binding) {
             let binding = text;
             binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
+        }
+        else {
+            ComponentQueue_1.ComponentQueue.add(this);
         }
         return this;
     }
@@ -163,6 +169,9 @@ class AbstractComponent {
                 binding.model.set(binding.onUserUpdate(this.element[valueProp]));
             }.bind(this));
         }
+        else {
+            ComponentQueue_1.ComponentQueue.add(this);
+        }
         return this;
     }
     removeValue() {
@@ -207,6 +216,9 @@ class AbstractComponent {
         else if (value instanceof Binding_1.Binding) {
             let binding = value;
             binding.model.registerCallback(this, ComponentQueue_1.ComponentQueue.add.bind(ComponentQueue_1.ComponentQueue, this));
+        }
+        else {
+            ComponentQueue_1.ComponentQueue.add(this);
         }
         return this;
     }
