@@ -15,6 +15,12 @@ export class FunctionalElement<V> extends AbstractElement<V> {
             model.registerCallback(model, this.doUpdate.bind(this));
     }
 
+    listensTo(listenedTo: AbstractElement<any>): this {
+        this.listenedTo.push(listenedTo);
+        listenedTo.registerCallback(listenedTo, this.doUpdate.bind(this));
+        return this;
+    }
+
     get(): V {
         return this.handler.apply(this.handler, this.listenedTo.map(function (model: ModelElement<any>) {
             return model.get();

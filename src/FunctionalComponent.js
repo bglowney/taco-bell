@@ -8,6 +8,11 @@ class FunctionalElement extends AbstractElement_1.AbstractElement {
         for (let model of this.listenedTo)
             model.registerCallback(model, this.doUpdate.bind(this));
     }
+    listensTo(listenedTo) {
+        this.listenedTo.push(listenedTo);
+        listenedTo.registerCallback(listenedTo, this.doUpdate.bind(this));
+        return this;
+    }
     get() {
         return this.handler.apply(this.handler, this.listenedTo.map(function (model) {
             return model.get();
