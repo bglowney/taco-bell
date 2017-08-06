@@ -596,6 +596,7 @@ function deserialize(str) {
     }
 }
 exports.deserialize = deserialize;
+;
 class HttpStream {
     constructor(baseURL, interceptor) {
         this.subscribers = [];
@@ -607,23 +608,7 @@ class HttpStream {
         return this;
     }
     get(params) {
-        let queryStr = params == null ? "" : "?";
-        let delim = "";
-        for (let key in params) {
-            if (!params.hasOwnProperty(key))
-                continue;
-            queryStr += delim;
-            delim = "&";
-            queryStr += encodeURIComponent(key);
-            queryStr += "=";
-            let v;
-            if (params[key] instanceof ModelElement_1.ModelElement)
-                v = params[key].get();
-            else
-                v = params[key];
-            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
-        }
-        this.send("GET", this.baseURL + queryStr);
+        this.sendGet(this.baseURL, params);
     }
     post(data) {
         this.send("POST", this.baseURL, data);
@@ -649,6 +634,25 @@ class HttpStream {
         else {
             return JSON.stringify(data);
         }
+    }
+    sendGet(url, params) {
+        let queryStr = params == null ? "" : "?";
+        let delim = "";
+        for (let key in params) {
+            if (!params.hasOwnProperty(key))
+                continue;
+            queryStr += delim;
+            delim = "&";
+            queryStr += encodeURIComponent(key);
+            queryStr += "=";
+            let v;
+            if (params[key] instanceof ModelElement_1.ModelElement)
+                v = params[key].get();
+            else
+                v = params[key];
+            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
+        }
+        this.send("GET", url + queryStr);
     }
     send(method, url, params) {
         const self = this;
@@ -680,25 +684,30 @@ class HttpStream {
     }
 }
 exports.HttpStream = HttpStream;
-function httpStreamHandler(stream, method, params) {
+function httpGetHandler(stream, params) {
     return function (event) {
-        switch (method) {
-            case "GET":
-                stream.get(params);
-                break;
-            case "POST":
-                stream.post(params);
-                break;
-            case "PUT":
-                stream.put(params);
-                break;
-            case "DELETE":
-                stream.delete(params);
-                break;
-        }
+        stream.get(params);
     };
 }
-exports.httpStreamHandler = httpStreamHandler;
+exports.httpGetHandler = httpGetHandler;
+function httpPostHandler(stream, params) {
+    return function (event) {
+        stream.post(params);
+    };
+}
+exports.httpPostHandler = httpPostHandler;
+function httpPutHandler(stream, params) {
+    return function (event) {
+        stream.put(params);
+    };
+}
+exports.httpPutHandler = httpPutHandler;
+function httpDeleteHandler(stream, params) {
+    return function (event) {
+        stream.delete(params);
+    };
+}
+exports.httpDeleteHandler = httpDeleteHandler;
 
 },{"./ComponentQueue":6,"./ModelElement":10}],8:[function(require,module,exports){
 "use strict";
@@ -809,9 +818,8 @@ class ErrorInterceptor {
         this.body = new ErrorResponse();
     }
 }
-class Request extends Http_1.AbstractSerializable {
+class Request {
     constructor() {
-        super(...arguments);
         this.a = new ModelElement_1.ModelElement("a");
         this.b = new ModelElement_1.ModelElement("b");
     }
@@ -867,14 +875,14 @@ new Component_1.Component("section", document.getElementById("app-root"))
     .withValue(model.inputValue)).child(new Component_1.Component("button")
     .withAttribute("id", "getRemoteButton")
     .withText("get remote")
-    .on("click", Http_1.httpStreamHandler(getStream, "GET", model.request)), new Component_1.Component("p")
+    .on("click", Http_1.httpGetHandler(getStream, model.request)), new Component_1.Component("p")
     .withAttribute("id", "pc")
     .withText(model.response.c), new Component_1.Component("p")
     .withAttribute("id", "pd")
     .withText(model.response.d), new Component_1.Component("button")
     .withAttribute("id", "postRemoteButton")
     .withText("post remote")
-    .on("click", Http_1.httpStreamHandler(postStream, "POST", model.request)), new Component_1.Component("button")
+    .on("click", Http_1.httpPostHandler(postStream, model.request)), new Component_1.Component("button")
     .withAttribute("id", "badGetRequestButton")
     .withText("send bad GET request")
     .on("click", () => {

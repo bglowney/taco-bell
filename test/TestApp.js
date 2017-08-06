@@ -11,9 +11,8 @@ class ErrorInterceptor {
         this.body = new ErrorResponse();
     }
 }
-class Request extends Http_1.AbstractSerializable {
+class Request {
     constructor() {
-        super(...arguments);
         this.a = new ModelElement_1.ModelElement("a");
         this.b = new ModelElement_1.ModelElement("b");
     }
@@ -69,14 +68,14 @@ new Component_1.Component("section", document.getElementById("app-root"))
     .withValue(model.inputValue)).child(new Component_1.Component("button")
     .withAttribute("id", "getRemoteButton")
     .withText("get remote")
-    .on("click", Http_1.httpStreamHandler(getStream, "GET", model.request)), new Component_1.Component("p")
+    .on("click", Http_1.httpGetHandler(getStream, model.request)), new Component_1.Component("p")
     .withAttribute("id", "pc")
     .withText(model.response.c), new Component_1.Component("p")
     .withAttribute("id", "pd")
     .withText(model.response.d), new Component_1.Component("button")
     .withAttribute("id", "postRemoteButton")
     .withText("post remote")
-    .on("click", Http_1.httpStreamHandler(postStream, "POST", model.request)), new Component_1.Component("button")
+    .on("click", Http_1.httpPostHandler(postStream, model.request)), new Component_1.Component("button")
     .withAttribute("id", "badGetRequestButton")
     .withText("send bad GET request")
     .on("click", () => {

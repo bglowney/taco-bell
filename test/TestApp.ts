@@ -3,14 +3,17 @@ import {Component} from "../src/Component";
 import {ComponentQueue} from "../src/ComponentQueue";
 import {Collection} from "../src/Collection";
 import {ModelArray} from "../src/ModelArray";
-import {httpStreamHandler, HttpStream, AbstractSerializable, HttpResponseInterceptor} from "../src/Http";
+import {
+    HttpStream, AbstractSerializable, HttpResponseInterceptor, httpGetHandler, httpPostHandler, HttpGetParams,
+} from "../src/Http";
 
 class ErrorInterceptor implements HttpResponseInterceptor<ErrorResponse> {
     readonly statusCode = new ModelElement<number>();
     readonly body = new ErrorResponse();
 }
 
-class Request extends AbstractSerializable{
+class Request implements HttpGetParams {
+    [key: string]: ModelElement<any>;
     readonly a = new ModelElement<string>("a");
     readonly b = new ModelElement<string>("b");
 }
@@ -75,7 +78,7 @@ new Component("section", document.getElementById("app-root"))
         new Component("button")
             .withAttribute("id", "getRemoteButton")
             .withText("get remote")
-            .on("click", httpStreamHandler(getStream, "GET", model.request)),
+            .on("click", httpGetHandler(getStream, model.request)),
         new Component("p")
             .withAttribute("id","pc")
             .withText(model.response.c),
@@ -85,7 +88,7 @@ new Component("section", document.getElementById("app-root"))
         new Component("button")
             .withAttribute("id", "postRemoteButton")
             .withText("post remote")
-            .on("click", httpStreamHandler(postStream, "POST", model.request)),
+            .on("click", httpPostHandler(postStream, model.request)),
         new Component("button")
             .withAttribute("id", "badGetRequestButton")
             .withText("send bad GET request")

@@ -77,7 +77,15 @@ export interface HttpResponseInterceptor<E> {
     body?: ModelElement<E> | Deserializable;
 }
 
-export class HttpStream<P,R,E> {
+interface ToStringable {
+    toString: () => string
+}
+
+export interface HttpGetParams { [key: string]: ModelElement<ToStringable> | ToStringable };
+
+type HttpNonIdempotentParams = Serializable | ModelElement<any> | any;
+
+export class HttpStream<P extends HttpNonIdempotentParams,R,E> {
 
     protected subscribers: Array<ModelElement<R> | Deserializable> = [];
     protected baseURL: string;
@@ -93,25 +101,8 @@ export class HttpStream<P,R,E> {
         return this;
     }
 
-    get(params: P): void {
-        let queryStr = params == null ? "" : "?";
-
-        let delim = "";
-        for (let key in params) {
-            if (!params.hasOwnProperty(key)) continue;
-            queryStr += delim;
-            delim = "&";
-            queryStr += encodeURIComponent(key);
-            queryStr += "=";
-            let v;
-            if (params[key] instanceof ModelElement)
-                v = (params[key] as ModelElement<any>).get();
-            else
-                v = params[key];
-            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
-        }
-
-        this.send("GET", this.baseURL + queryStr);
+    get(params: HttpGetParams): void {
+        this.sendGet(this.baseURL, params);
     }
 
     post(data: P): void {
@@ -131,16 +122,36 @@ export class HttpStream<P,R,E> {
             return "";
 
         if (instanceofSerializable(data)) {
-            return (data as Serializable).serialize()
+            return (data as any as Serializable).serialize()
         } else if (data instanceof ModelElement) {
             return JSON.stringify((data as ModelElement<any>).get());
         } else if (typeof data === "string") {
-            return data;
+            return data as any as string;
         }
         // number, boolean, object
         else {
             return JSON.stringify(data);
         }
+    }
+
+    protected sendGet(url: string, params?: HttpGetParams): void {
+        let queryStr = params == null ? "" : "?";
+
+        let delim = "";
+        for (let key in params) {
+            if (!params.hasOwnProperty(key)) continue;
+            queryStr += delim;
+            delim = "&";
+            queryStr += encodeURIComponent(key);
+            queryStr += "=";
+            let v;
+            if (params[key] instanceof ModelElement)
+                v = (params[key] as ModelElement<any>).get();
+            else
+                v = params[key];
+            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
+        }
+        this.send("GET", url + queryStr);
     }
 
     protected send(method: HttpMethod, url: string, params?: P): void {
@@ -179,23 +190,26 @@ export class HttpStream<P,R,E> {
 
 }
 
-export function httpStreamHandler<P,C extends AbstractComponent>(stream: HttpStream<P,any,any>,
-                                                                 method: HttpMethod,
-                                                                 params: P): ComponentEventHandler<C> {
+export function httpGetHandler<P,C extends AbstractComponent> (stream: HttpStream<P,any,any>, params: HttpGetParams): ComponentEventHandler<C> {
     return function (this: C, event: Event): void {
-        switch (method) {
-            case "GET":
-                stream.get(params);
-                break;
-            case "POST":
-                stream.post(params);
-                break;
-            case "PUT":
-                stream.put(params);
-                break;
-            case "DELETE":
-                stream.delete(params);
-                break;
-        }
+        stream.get(params);
+    }
+}
+
+export function httpPostHandler<P,C extends AbstractComponent> (stream: HttpStream<P,any,any>, params: P): ComponentEventHandler<C> {
+    return function (this: C, event: Event): void {
+        stream.post(params);
+    }
+}
+
+export function httpPutHandler<P,C extends AbstractComponent> (stream: HttpStream<P,any,any>, params: P): ComponentEventHandler<C> {
+    return function (this: C, event: Event): void {
+        stream.put(params);
+    }
+}
+
+export function httpDeleteHandler<P,C extends AbstractComponent> (stream: HttpStream<P,any,any>, params: P): ComponentEventHandler<C> {
+    return function (this: C, event: Event): void {
+        stream.delete(params);
     }
 }

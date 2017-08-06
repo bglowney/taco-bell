@@ -51,6 +51,7 @@ function deserialize(str) {
     }
 }
 exports.deserialize = deserialize;
+;
 class HttpStream {
     constructor(baseURL, interceptor) {
         this.subscribers = [];
@@ -62,23 +63,7 @@ class HttpStream {
         return this;
     }
     get(params) {
-        let queryStr = params == null ? "" : "?";
-        let delim = "";
-        for (let key in params) {
-            if (!params.hasOwnProperty(key))
-                continue;
-            queryStr += delim;
-            delim = "&";
-            queryStr += encodeURIComponent(key);
-            queryStr += "=";
-            let v;
-            if (params[key] instanceof ModelElement_1.ModelElement)
-                v = params[key].get();
-            else
-                v = params[key];
-            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
-        }
-        this.send("GET", this.baseURL + queryStr);
+        this.sendGet(this.baseURL, params);
     }
     post(data) {
         this.send("POST", this.baseURL, data);
@@ -104,6 +89,25 @@ class HttpStream {
         else {
             return JSON.stringify(data);
         }
+    }
+    sendGet(url, params) {
+        let queryStr = params == null ? "" : "?";
+        let delim = "";
+        for (let key in params) {
+            if (!params.hasOwnProperty(key))
+                continue;
+            queryStr += delim;
+            delim = "&";
+            queryStr += encodeURIComponent(key);
+            queryStr += "=";
+            let v;
+            if (params[key] instanceof ModelElement_1.ModelElement)
+                v = params[key].get();
+            else
+                v = params[key];
+            queryStr += encodeURIComponent(v != undefined ? v.toString() : "");
+        }
+        this.send("GET", url + queryStr);
     }
     send(method, url, params) {
         const self = this;
@@ -135,22 +139,27 @@ class HttpStream {
     }
 }
 exports.HttpStream = HttpStream;
-function httpStreamHandler(stream, method, params) {
+function httpGetHandler(stream, params) {
     return function (event) {
-        switch (method) {
-            case "GET":
-                stream.get(params);
-                break;
-            case "POST":
-                stream.post(params);
-                break;
-            case "PUT":
-                stream.put(params);
-                break;
-            case "DELETE":
-                stream.delete(params);
-                break;
-        }
+        stream.get(params);
     };
 }
-exports.httpStreamHandler = httpStreamHandler;
+exports.httpGetHandler = httpGetHandler;
+function httpPostHandler(stream, params) {
+    return function (event) {
+        stream.post(params);
+    };
+}
+exports.httpPostHandler = httpPostHandler;
+function httpPutHandler(stream, params) {
+    return function (event) {
+        stream.put(params);
+    };
+}
+exports.httpPutHandler = httpPutHandler;
+function httpDeleteHandler(stream, params) {
+    return function (event) {
+        stream.delete(params);
+    };
+}
+exports.httpDeleteHandler = httpDeleteHandler;
