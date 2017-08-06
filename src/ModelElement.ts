@@ -1,5 +1,5 @@
 import {AbstractElement} from "./AbstractElement";
-import {RemoteStream} from "./RemoteStream";
+import {HttpStream} from "./Http";
 
 export class ModelElement<V> extends AbstractElement<V> {
     protected data: V;
@@ -19,7 +19,7 @@ export class ModelElement<V> extends AbstractElement<V> {
             this.doUpdate();
     }
 
-    subscribe(remoteStream: RemoteStream): void {
-        throw "Not Implemented";
+    subscribe(remoteStream: HttpStream<any,V,any>): void {
+        remoteStream.withSubscriber(this);
     }
 }

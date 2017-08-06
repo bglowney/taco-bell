@@ -14,7 +14,7 @@ class ModelElement extends AbstractElement_1.AbstractElement {
             this.doUpdate();
     }
     subscribe(remoteStream) {
-        throw "Not Implemented";
+        remoteStream.withSubscriber(this);
     }
 }
 exports.ModelElement = ModelElement;

@@ -1,6 +1,6 @@
 import {AbstractElement} from "./AbstractElement";
 import {ModelElement} from "./ModelElement";
-import {RemoteStream} from "./RemoteStream";
+import {HttpStream} from "./Http";
 
 export class FunctionalElement<V> extends AbstractElement<V> {
 
@@ -27,7 +27,4 @@ export class FunctionalElement<V> extends AbstractElement<V> {
         }));
     }
 
-    subscribe(remoteStream: RemoteStream): void {
-        throw "Not implemented";
-    }
 }

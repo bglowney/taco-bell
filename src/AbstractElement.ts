@@ -1,6 +1,5 @@
 import {AbstractComponent} from "./AbstractComponent";
 import {UpdateCallback} from "./Binding";
-import {RemoteStream} from "./RemoteStream";
 import {_QueableElement, ComponentQueue, _instanceofQueableComponent, _QueableComponent} from "./ComponentQueue";
 
 export abstract class AbstractElement<V> implements _QueableElement {
@@ -8,8 +7,6 @@ export abstract class AbstractElement<V> implements _QueableElement {
     protected boundComponents: Set<AbstractComponent>;
 
     abstract get(): V;
-
-    abstract subscribe(remoteStream: RemoteStream): void;
 
     destroy(): void {
         if (!this.boundComponents)

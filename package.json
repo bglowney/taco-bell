@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/bglowney/taco-bell/issues"
   },
-  "homepage": "https://github.com/bglowney/taco-bell#readme"
+  "homepage": "https://github.com/bglowney/taco-bell#readme",
+  "devDependencies": {
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "moment": "^2.18.1",
+    "sprintf-js": "^1.1.1",
+    "url": "^0.11.0"
+  }
 }

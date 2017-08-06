@@ -10,7 +10,7 @@ QUnit.module("Test ComponentQueue", function () {
         // initially we have not yet invoked a cycle
         assert.notOk($("#header").length, "Header element should not yet be in the DOM");
         assert.notOk($("#header-title").length, "Header title element should not yet be in the DOM");
-        assert.equal(queue.queue.size, 6, "All newly constructed components should be in the queue");
+        assert.equal(queue.queue.size, 12, "All newly constructed components should be in the queue");
         // assert.notOk($headerTitle.text(), "No title should be displayed initially");
         queue.cycle();
         var $headerTitle = $("#header-title");
@@ -53,6 +53,7 @@ QUnit.module("Test ComponentQueue", function () {
             assert.ok($("#header").length, "Header should existing in the dom");
             assert.notOk($("#header:visible").length, "Header should not be visible");
         }
+
         verifyEvent();
 
         // verify event handler is replaced after the button has been modified
@@ -80,5 +81,40 @@ QUnit.module("Test ComponentQueue", function () {
         assert.equal($("#button")[0].nextSibling, $("#input")[0], "Button is followed by input");
 
     });
+
+    // wait for the above component cycle to complete before running this test
+    setTimeout(function () {
+        QUnit.test("Test remote streams", function (assert) {
+
+            assert.expect(7);
+            var done1 = assert.async();
+            var done2 = assert.async();
+
+            // check that the remote stream is successful
+            var $getRemoteButton = $("#getRemoteButton");
+            assert.equal($getRemoteButton.length, 1);
+            var $pc = $("#pc");
+            var $pd = $("#pd");
+            assert.notOk($pc.text(), "paragraph c should be empty before getting from remote");
+            assert.notOk($pd.text(), "paragraph d should be empty getting from remote");
+
+            $getRemoteButton.click();
+            setTimeout(function () {
+                assert.equal($pc.text(), "C", "paragraph c contain 'C'");
+                assert.equal($pd.text(), "true", "paragraph d contain 'true'");
+                done1();
+            }, 100);
+
+            var $badGetRequestButton = $("#badGetRequestButton");
+            var $errorMessage = $("#errorMessage");
+            assert.notOk($errorMessage.text(), "Error message should be empty before making bad request");
+
+            $badGetRequestButton.click();
+            setTimeout(function() {
+                assert.equal($errorMessage.text(), "Unrecognized request", "Error message should be displayed");
+                done2();
+            }, 150);
+        })
+    },100);
 
 });

@@ -39,8 +39,5 @@ class ModelArray extends ModelCollection_1.ModelCollection {
             this.remove(this.data[0]);
         return this;
     }
-    subscribe(remoteStream) {
-        throw "Not implemented";
-    }
 }
 exports.ModelArray = ModelArray;

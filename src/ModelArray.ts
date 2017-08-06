@@ -3,7 +3,6 @@ import {ModelElement} from "./ModelElement";
 import {AbstractComponent} from "./AbstractComponent";
 import {UpdateCallback} from "./Binding";
 import {Collection} from "./Collection";
-import {RemoteStream} from "./RemoteStream";
 
 export class ModelArray<M> extends ModelCollection<M,Array<ModelElement<M>>> {
 
@@ -50,7 +49,4 @@ export class ModelArray<M> extends ModelCollection<M,Array<ModelElement<M>>> {
         return this;
     }
 
-    subscribe(remoteStream: RemoteStream): void {
-        throw "Not implemented";
-    }
 }
