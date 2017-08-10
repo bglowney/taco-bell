@@ -18,8 +18,5 @@ class FunctionalElement extends AbstractElement_1.AbstractElement {
             return model.get();
         }));
     }
-    subscribe(remoteStream) {
-        throw "Not implemented";
-    }
 }
 exports.FunctionalElement = FunctionalElement;

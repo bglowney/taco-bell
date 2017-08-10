@@ -43,13 +43,13 @@ export class TwoWayBinding<U,M,O> extends Binding<M,O> {
     }
 }
 
-export interface Serializable<T> {
+export interface Persistable<T> {
     serialize(): string;
     deserialize(emptyModel: T, serialized: string): T;
 }
 
 class _Persistence {
-    model: Serializable<any>;
+    model: Persistable<any>;
     emptyModel: new (a?, b?, c?, d?, e?, f?) => void;
 
     store(): void {
@@ -103,7 +103,7 @@ export function persistentModel(constructor: new (a?, b?, c?, d?, e?, f?) => voi
         }
         Object.assign(this, original);
         this.__proto__ = original.__proto__;
-        Persistence.model = this as Serializable<any>;
+        Persistence.model = this as Persistable<any>;
         makeModelPersistent.call(this);
     };
 }

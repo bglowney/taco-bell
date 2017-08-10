@@ -3,7 +3,7 @@ import {ModelElement} from "./ModelElement";
 import {AbstractComponent} from "./AbstractComponent";
 import {ComponentQueue} from "./ComponentQueue";
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export interface Serializable {
     serialize(): string;
