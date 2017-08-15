@@ -45,7 +45,7 @@ export function serialize(this: Serializable): string {
         for (let k in this) {
             const v = this[k];
             if (v instanceof ModelElement) {
-                const meo = (v as ModelElement<any>).get;
+                const meo = (v as ModelElement<any>).get();
                 if (typeof meo === "object")
                     plainObject[k] = toPlainObject.call(meo);
                 else

@@ -26,7 +26,7 @@ function serialize() {
         for (let k in this) {
             const v = this[k];
             if (v instanceof ModelElement_1.ModelElement) {
-                const meo = v.get;
+                const meo = v.get();
                 if (typeof meo === "object")
                     plainObject[k] = toPlainObject.call(meo);
                 else
