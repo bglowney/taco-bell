@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModelElement_1 = require("./ModelElement");
 const ComponentQueue_1 = require("./ComponentQueue");
 class AbstractSerializable {
@@ -57,6 +58,10 @@ class HttpStream {
         this.subscribers = [];
         this.baseURL = baseURL;
         this.interceptor = interceptor;
+    }
+    withInterceptor(interceptor) {
+        this.interceptor = interceptor;
+        return this;
     }
     withSubscriber(subscriber) {
         this.subscribers.push(subscriber);
@@ -120,14 +125,15 @@ class HttpStream {
                 else
                     self.interceptor.body.deserialize(this.responseText);
             }
-            if (method === "GET") {
-                for (let subscriber of self.subscribers) {
-                    if (instanceofDeserializable(subscriber)) {
-                        subscriber.deserialize(this.responseText);
-                    }
-                    else {
-                        subscriber.set(JSON.parse(this.responseText));
-                    }
+            for (let subscriber of self.subscribers) {
+                if (subscriber instanceof ModelElement_1.ModelElement) {
+                    subscriber.set(JSON.parse(this.responseText));
+                }
+                else if (instanceofDeserializable(subscriber)) {
+                    subscriber.deserialize(this.responseText);
+                }
+                else {
+                    subscriber(JSON.parse(this.responseText));
                 }
             }
             ComponentQueue_1.ComponentQueue.cycle();

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var AbstractComponent_1 = require("./src/AbstractComponent");
 exports.AbstractComponent = AbstractComponent_1.AbstractComponent;
 var AbstractElement_1 = require("./src/AbstractElement");

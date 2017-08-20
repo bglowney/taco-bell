@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ComponentQueue_1 = require("./ComponentQueue");
 class AbstractElement {
     destroy() {

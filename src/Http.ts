@@ -85,9 +85,11 @@ export interface HttpGetParams { [key: string]: ModelElement<ToStringable> | ToS
 
 type HttpNonIdempotentParams = Serializable | ModelElement<any> | any;
 
+export type ResponseHandler<R> = (response: R) => void;
+
 export class HttpStream<P extends HttpNonIdempotentParams,R,E> {
 
-    protected subscribers: Array<ModelElement<R> | Deserializable> = [];
+    protected subscribers: Array<ModelElement<R> | Deserializable | ResponseHandler<R>> = [];
     protected baseURL: string;
     protected interceptor: HttpResponseInterceptor<E>;
 
@@ -96,7 +98,12 @@ export class HttpStream<P extends HttpNonIdempotentParams,R,E> {
         this.interceptor = interceptor;
     }
 
-    withSubscriber(subscriber: ModelElement<R> | Deserializable): this {
+    withInterceptor(interceptor: HttpResponseInterceptor<E>): this {
+        this.interceptor = interceptor;
+        return this;
+    }
+
+    withSubscriber(subscriber: ModelElement<R> | Deserializable | ResponseHandler<R>): this {
         this.subscribers.push(subscriber);
         return this;
     }
@@ -167,16 +174,14 @@ export class HttpStream<P extends HttpNonIdempotentParams,R,E> {
                     (self.interceptor.body as Deserializable).deserialize(this.responseText);
             }
 
-            if (method === "GET") {
-
-                for (let subscriber of self.subscribers) {
-                    if (instanceofDeserializable(subscriber)) {
-                        (subscriber as Deserializable).deserialize(this.responseText);
-                    } else {
-                        (subscriber as ModelElement<R>).set(JSON.parse(this.responseText));
-                    }
+            for (let subscriber of self.subscribers) {
+                if (subscriber instanceof ModelElement) {
+                    (subscriber as ModelElement<R>).set(JSON.parse(this.responseText));
+                } else if (instanceofDeserializable(subscriber)) {
+                    (subscriber as Deserializable).deserialize(this.responseText);
+                } else {
+                    (subscriber as ResponseHandler<R>)(JSON.parse(this.responseText));
                 }
-
             }
 
             ComponentQueue.cycle();

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModelCollection_1 = require("./ModelCollection");
 const ModelElement_1 = require("./ModelElement");
 class ModelObject extends ModelCollection_1.ModelCollection {

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModelElement_1 = require("./ModelElement");
 const ModelArray_1 = require("./ModelArray");
 class Binding {

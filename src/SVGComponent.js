@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Component_1 = require("./Component");
 const ModelElement_1 = require("./ModelElement");
 class SVGComponent extends Component_1.Component {

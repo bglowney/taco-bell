@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function _instanceofQueableComponent(obj) {
     return 'getParent' in obj
         && '_isDestroyed' in obj

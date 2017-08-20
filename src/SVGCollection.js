@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Collection_1 = require("./Collection");
 const ModelElement_1 = require("./ModelElement");
 class SVGCollection extends Collection_1.Collection {

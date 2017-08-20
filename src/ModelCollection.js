@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModelElement_1 = require("./ModelElement");
 class ModelCollection extends ModelElement_1.ModelElement {
     registerAddCallback(component, addCallback) {

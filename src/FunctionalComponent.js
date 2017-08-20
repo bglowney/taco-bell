@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractElement_1 = require("./AbstractElement");
 class FunctionalElement extends AbstractElement_1.AbstractElement {
     constructor(handler, ...listenedTo) {

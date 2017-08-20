@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModelArray_1 = require("./ModelArray");
 const Component_1 = require("./Component");
 class Collection extends Component_1.Component {

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Binding_1 = require("./Binding");
 const AbstractElement_1 = require("./AbstractElement");
 const ModelElement_1 = require("./ModelElement");

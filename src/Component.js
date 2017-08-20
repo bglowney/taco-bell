@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractComponent_1 = require("./AbstractComponent");
 const ComponentQueue_1 = require("./ComponentQueue");
 class Component extends AbstractComponent_1.AbstractComponent {
