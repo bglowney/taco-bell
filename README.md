@@ -8,6 +8,8 @@ _Prerequisite:_ npm/node
 * `tsc` to build
 
 ## Examples
+### [Starter Template](https://www.npmjs.com/package/taco-bell-starter)
+
 ### [Tetris](https://www.npmjs.com/package/taco-bell-tetris)
 [Preview](https://bglowney.github.io/tetris.html)
 
