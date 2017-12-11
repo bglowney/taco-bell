@@ -300,8 +300,8 @@ export abstract class AbstractComponent implements _QueableComponent{
         return this;
     }
 
-    off(eventName: EventName): this {
-        this.element.removeEventListener(eventName);
+    off(eventName: EventName, eventHandler: ComponentEventHandler<this>): this {
+        this.element.removeEventListener(eventName, eventHandler);
         return this;
     }
 
