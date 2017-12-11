@@ -27,6 +27,7 @@ export {SVGCollection} from "./src/SVGCollection";
 export {SVGComponent} from "./src/SVGComponent";
 export {
     HttpMethod,
+    HttpGetParams,
     Serializable,
     AbstractSerializable,
     Deserializable,
@@ -37,5 +38,7 @@ export {
     httpGetHandler,
     httpPostHandler,
     httpPutHandler,
-    httpDeleteHandler
+    httpDeleteHandler,
+    instanceofSerializable,
+    instanceofDeserializable
 } from "./src/Http";

@@ -30,6 +30,10 @@ export class _ComponentQueue {
     protected queue: Set<_QueableComponent | _QueableElement> = new Set<_QueableComponent | _QueableElement>();
     protected cycleRoot: _QueableComponent;
 
+    public size(): number {
+        return this.queue.size;
+    }
+
     public add(component: _QueableComponent): void {
         this.queue.add(component);
     }

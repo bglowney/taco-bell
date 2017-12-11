@@ -14,23 +14,23 @@ export abstract class AbstractSerializable implements Serializable, Deserializab
         return serialize.call(this);
     }
 
-    deserialize(data: Object): void {
+    deserialize(data: string): void {
         deserialize.call(this, data);
     }
 }
 
 export interface Deserializable {
-    deserialize(data: Object): void;
+    deserialize(data: string): void;
 }
 
-function instanceofDeserializable(o: any): boolean {
+export function instanceofDeserializable(o: any): boolean {
     if (typeof o === "object" && o != null)
         return "deserialize" in o && (typeof o["deserialize"] === "function");
 
     return false;
 }
 
-function instanceofSerializable(o: any): boolean {
+export function instanceofSerializable(o: any): boolean {
     if (typeof o === "object" && o != null)
         return "serialize" in o && (typeof o["serialize"] === "function");
 
@@ -59,7 +59,7 @@ export function serialize(this: Serializable): string {
 }
 
 // this is a default deserialization function
-export function deserialize(this: Deserializable, str: string): void {
+export function deserialize(this: Deserializable | HttpGetParams, str: string): void {
     const response = JSON.parse(str);
     for (let k in this) {
         if (k in response && this[k] instanceof ModelElement) {
@@ -81,7 +81,7 @@ interface ToStringable {
     toString: () => string
 }
 
-export interface HttpGetParams { [key: string]: ModelElement<ToStringable> | ToStringable };
+export interface HttpGetParams { [key: string]: ModelElement<ToStringable> | ToStringable }
 
 type HttpNonIdempotentParams = Serializable | ModelElement<any> | any;
 
@@ -169,7 +169,7 @@ export class HttpStream<P extends HttpNonIdempotentParams,R,E> {
             if(self.interceptor != undefined) {
                 self.interceptor.statusCode.set(this.status);
                 if (self.interceptor.body instanceof ModelElement)
-                    self.interceptor.body.set(JSON.parse(this.responseText));
+                    (self.interceptor.body as ModelElement<any>).set(JSON.parse(this.responseText));
                 else
                     (self.interceptor.body as Deserializable).deserialize(this.responseText);
             }
