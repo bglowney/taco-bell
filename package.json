@@ -36,7 +36,7 @@
     "moment": "^2.18.1",
     "selenium-webdriver": "^3.5.0",
     "sprintf-js": "^1.1.1",
-    "taco-bell-server": "file:../taco-bell-server",
+    "taco-bell-server": "^1.0.4",
     "typescript": "^2.4.2",
     "url": "^0.11.0"
   }
