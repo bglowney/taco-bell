@@ -301,10 +301,21 @@ class AbstractComponent {
             }
         }
     }
+    isPromise(x) {
+        return x instanceof Promise
+            || (typeof x === "object" || typeof x === "function")
+                && x.then
+                && typeof x.then === "function";
+    }
     on(eventName, eventHandler) {
         this.element.addEventListener(eventName, (event) => {
-            eventHandler.call(this, event);
-            ComponentQueue_1.ComponentQueue.cycle();
+            let maybePromise = eventHandler.call(this, event);
+            if (this.isPromise(maybePromise)) {
+                maybePromise.then(ComponentQueue_1.ComponentQueue.cycle.bind(ComponentQueue_1.ComponentQueue));
+            }
+            else {
+                ComponentQueue_1.ComponentQueue.cycle();
+            }
         });
         return this;
     }

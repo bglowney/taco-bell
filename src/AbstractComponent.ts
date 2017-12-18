@@ -5,7 +5,7 @@ import {AbstractElement} from "./AbstractElement";
 import {ModelElement} from "./ModelElement";
 import {ComponentQueue, _QueableComponent} from "./ComponentQueue";
 
-export abstract class AbstractComponent implements _QueableComponent{
+export abstract class AbstractComponent implements _QueableComponent {
     protected parent: AbstractComponent | Element;
     protected element: Element;
 
@@ -59,7 +59,7 @@ export abstract class AbstractComponent implements _QueableComponent{
         return this.destroyed;
     }
 
-    _remove(): void{
+    _remove(): void {
         if (this.element.parentElement)
             this.element.parentElement.removeChild(this.element);
     }
@@ -81,7 +81,7 @@ export abstract class AbstractComponent implements _QueableComponent{
                 // (cls as AbstractElement<string>).registerCallback(this, this.withClass.bind(this));
                 (cls as AbstractElement<string>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
             } else if (cls instanceof Binding) {
-                let binding = cls as Binding<any,string>;
+                let binding = cls as Binding<any, string>;
                 // binding.model.registerCallback(this, this.updateClass.bind(this));
                 binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
             } else {
@@ -102,7 +102,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             } else if (cp instanceof AbstractElement) {
                 classNames.push((cp as AbstractElement<string>).get());
             } else {// cp is Binding<any,string>
-                let binding = cp as Binding<any,string>;
+                let binding = cp as Binding<any, string>;
                 classNames.push(binding.onupdate(binding.model.get()));
             }
         }
@@ -115,7 +115,7 @@ export abstract class AbstractComponent implements _QueableComponent{
                 if (cls instanceof AbstractElement) {
                     (cls as AbstractElement<string>).unregisterCallback(this, this.updateClass.bind(this));
                 } else if (cls instanceof Binding) {
-                    let binding = cls as Binding<any,string>;
+                    let binding = cls as Binding<any, string>;
                     binding.model.unregisterCallback(this, this.updateClass.bind(this));
                 }
                 this.classes.delete(cls);
@@ -132,7 +132,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             // (text as AbstractElement<string>).registerCallback(this, this.updateText.bind(this));
             (text as AbstractElement<string>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else if (this.text instanceof Binding) {
-            let binding = text as Binding<any,string>;
+            let binding = text as Binding<any, string>;
             // binding.model.registerCallback(this, this.updateText.bind(this));
             binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else {
@@ -149,7 +149,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             else if (this.text instanceof AbstractElement) {
                 text = (this.text as AbstractElement<string>).get();
             } else { // text is Binding<any,string>
-                let binding = (this.text as Binding<any,string>);
+                let binding = (this.text as Binding<any, string>);
                 text = binding.onupdate(binding.model.get());
             }
             this.element.textContent = text;
@@ -161,7 +161,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             if (this.text instanceof AbstractElement)
                 (this.text as AbstractElement<string>).unregisterCallback(this, this.updateText.bind(this));
             else if (this.text instanceof Binding) {
-                let binding = this.text as Binding<any,string>;
+                let binding = this.text as Binding<any, string>;
                 binding.model.unregisterCallback(this, this.updateText.bind(this));
             }
         }
@@ -170,10 +170,10 @@ export abstract class AbstractComponent implements _QueableComponent{
         return this;
     }
 
-    protected value: ComponentProperty<Primitive> | TwoWayBinding<Primitive,any,any>;
+    protected value: ComponentProperty<Primitive> | TwoWayBinding<Primitive, any, any>;
 
     // value should be bound with a two way binding
-    withValue(value: Primitive | ModelElement<Primitive> | TwoWayBinding<Primitive,any,any>): this {
+    withValue(value: Primitive | ModelElement<Primitive> | TwoWayBinding<Primitive, any, any>): this {
 
         this.value = value;
         let valueProp: string;
@@ -192,7 +192,7 @@ export abstract class AbstractComponent implements _QueableComponent{
                 (value as ModelElement<Primitive>).set((this.element as HTMLInputElement)[valueProp]);
             }.bind(this));
         } else if (this.value instanceof TwoWayBinding) {
-            let binding = value as TwoWayBinding<Primitive,any,any>;
+            let binding = value as TwoWayBinding<Primitive, any, any>;
             // binding.model.registerCallback(this, this.updateValue.bind(this));
             binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
             this.on("change", function () {
@@ -211,7 +211,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             if (this.value instanceof AbstractElement) {
                 (this.value as AbstractElement<Primitive>).unregisterCallback(this, this.updateValue.bind(this));
             } else if (this.value instanceof Binding) {
-                let binding = this.value as Binding<any,Primitive>;
+                let binding = this.value as Binding<any, Primitive>;
                 binding.model.unregisterCallback(this, this.updateValue.bind(this));
             }
         }
@@ -230,14 +230,14 @@ export abstract class AbstractComponent implements _QueableComponent{
             } else if (this.value instanceof AbstractElement) {
                 value = (this.value as AbstractElement<Primitive>).get();
             } else {// value is Binding<any,Primitive>
-                let binding = (this.value as Binding<any,Primitive>);
+                let binding = (this.value as Binding<any, Primitive>);
                 value = binding.onupdate(binding.model.get());
             }
             (this.element as HTMLInputElement)[valueProp] = value as string;
         }
     }
 
-    protected attrs: {[key: string]: ComponentProperty<Primitive>};
+    protected attrs: { [key: string]: ComponentProperty<Primitive> };
 
     withAttribute(name: HtmlAttributeName, value: ComponentProperty<Primitive>): this {
         if (!this.attrs)
@@ -249,7 +249,7 @@ export abstract class AbstractComponent implements _QueableComponent{
             // (value as AbstractElement<Primitive>).registerCallback(this, this.updateAttribute.bind(this,name));
             (value as AbstractElement<Primitive>).registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else if (value instanceof Binding) {
-            let binding = value as Binding<any,Primitive>;
+            let binding = value as Binding<any, Primitive>;
             //binding.model.registerCallback(this, this.updateAttribute.bind(this,name));
             binding.model.registerCallback(this, ComponentQueue.add.bind(ComponentQueue, this));
         } else {
@@ -266,7 +266,7 @@ export abstract class AbstractComponent implements _QueableComponent{
                 if (value instanceof AbstractElement) {
                     (value as AbstractElement<Primitive>).unregisterCallback(this, this.updateAttribute.bind(this, name));
                 } else {
-                    let binding = value as Binding<any,Primitive>;
+                    let binding = value as Binding<any, Primitive>;
                     binding.model.unregisterCallback(this, this.updateAttribute.bind(this, name));
                 }
                 delete this.attrs[name];
@@ -283,7 +283,7 @@ export abstract class AbstractComponent implements _QueableComponent{
                 if (value instanceof AbstractElement) {
                     value = (value as AbstractElement<Primitive>).get();
                 } else if (value instanceof Binding) {
-                    let  binding = value as Binding<any,Primitive>;
+                    let binding = value as Binding<any, Primitive>;
                     value = binding.onupdate(binding.model.get());
                 }
                 this.element.setAttribute(name, value as string);
@@ -291,11 +291,22 @@ export abstract class AbstractComponent implements _QueableComponent{
         }
     }
 
+    protected isPromise(x: any) {
+        return x instanceof Promise
+        || (typeof x === "object" || typeof x === "function")
+            && x.then
+            && typeof x.then === "function";
+    }
+
     on(eventName: EventName, eventHandler: ComponentEventHandler<this>): this {
         // this.element.addEventListener(eventName, eventHandler.bind(this));
         this.element.addEventListener(eventName, (event: Event): void => {
-            eventHandler.call(this, event);
-            ComponentQueue.cycle();
+            let maybePromise = eventHandler.call(this, event);
+            if (this.isPromise(maybePromise)) {
+                (maybePromise as Promise<any>).then(ComponentQueue.cycle.bind(ComponentQueue))
+            } else {
+                ComponentQueue.cycle();
+            }
         });
         return this;
     }
